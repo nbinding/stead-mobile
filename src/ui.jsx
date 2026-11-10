@@ -1,0 +1,7 @@
+import React from 'react';
+
+export function Field({field,value,onChange}){let {id,label,type,options,hint}=field;return <div className="field"><label htmlFor={id}>{label}</label>{hint&&<p className="field-hint">{hint}</p>}{type==='choice'?<div className={'choices '+(options.length===2?'two':'')} role="group" aria-label={label}>{options.map(o=><button type="button" key={o} className={'choice '+(value===o?'selected':'')} aria-pressed={value===o} onClick={()=>onChange(o)}><span className="radio-dot">{value===o&&<span/>}</span>{o}</button>)}</div>:type==='checks'?<div className="choices">{options.map(o=><label className="choice" key={o}><input type="checkbox" checked={(value||[]).includes(o)} onChange={e=>onChange(e.target.checked?[...(value||[]),o]:(value||[]).filter(x=>x!==o))}/>{o}</label>)}</div>:type==='textarea'?<textarea id={id} value={value||''} rows={4} onChange={e=>onChange(e.target.value)}/>:<input id={id} type={type} value={value||''} onChange={e=>onChange(e.target.value)}/>}</div>}
+
+export const gbp=pence=>new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP',minimumFractionDigits:2}).format((pence||0)/100);
+export const toPence=v=>Math.round((Number(v)||0)*100);
+export const ukDate=iso=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||'');return m?new Date(Date.UTC(+m[1],+m[2]-1,+m[3])).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}):''};
