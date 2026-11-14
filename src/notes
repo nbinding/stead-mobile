@@ -1,1 +1,1 @@
-Build React JSX with esbuild (jsx=automatic) and compile CSS with Tailwind 4. shadcn button adapted from https://ui.shadcn.com/r/styles/base-nova/button.json (MIT). Base UI, React and Three.js are bundled. No external runtime resources.
+Built with esbuild (jsx automatic) into one self-contained index.html: React, lucide icons and the nbinding design system (src/ds, Stead look) with its fonts inlined. No external runtime resources.
