@@ -4,8 +4,12 @@ assets/
 *.json
 !package.json
 !package-lock.json
+!src/ds/tokens.json
 .DS_Store
 node_modules/
 dist/
 .env
 .env.*
+test-results/
+playwright-report/
+build/
