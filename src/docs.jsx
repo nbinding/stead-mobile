@@ -1,7 +1,7 @@
 // Form A and the draft consent order: a few questions each, built from the D81 answers.
 import React from 'react';
 import { ArrowLeft, ArrowRight, Check, Copy, Printer, Download, PencilLine } from 'lucide-react';
-import { Field, MoneyInput, Rich, download } from './ui.jsx';
+import { Field, MoneyInput, Rich, Gaps, download } from './ui.jsx';
 import { formatMoney, pennies, ukDate } from './d81.js';
 import { FORM_A_ORDERS, suggestedFormAOrders, formAAnswers, draftOrder, orderText, equityShares } from './documents.js';
 
@@ -52,9 +52,6 @@ export function FormA({ d, change, go, notify }) {
     <div className="st-row-between"><button type="button" className="nb-text-button" onClick={() => go('home')}><ArrowLeft aria-hidden="true" />Journey</button><button type="button" className="nb-text-button" onClick={() => go('order')}>Consent order<ArrowRight aria-hidden="true" /></button></div>
   </div>;
 }
-
-/** Text with [placeholders] shown as dotted gaps still to fill. */
-const Gaps = ({ text }) => String(text).split(/\[([^\]]+)\]/g).map((p, i) => i % 2 ? <span key={i} className="nb-gap">{p}</span> : <React.Fragment key={i}>{p}</React.Fragment>);
 
 export function Order({ d, change, go, notify }) {
   const o = d.order, a = d.answers;
