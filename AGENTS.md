@@ -21,6 +21,7 @@ Guidance for AI coding agents working in this repository.
 | `src/d81.js` | D81 questions and sections, sums (pence), words for amounts, saved-data checks, loading and migrations. No React. |
 | `src/steps.js` | The 14 steps, glossary, envelope, outcomes, key dates and the calendar file. No React. |
 | `src/documents.js` | Form A answers and the draft consent order. No React. |
+| `src/templates.js` | Letters and agreements for the journey steps, filled from saved data. No React. |
 | `src/share.js` | Locking and opening share links, and suggested words. |
 | `src/ui.jsx` | Shared React pieces on the design system: fields, money inputs, terms, the sheet/dialog overlay, status marks. |
 | `src/journey.jsx` | The journey, step pages and the sealed-order keepsake. |

@@ -76,6 +76,28 @@ test('a step page carries its reference: the judge’s outcomes by shape, terms 
   expect(errors).toEqual([]);
 });
 
+test('steps that need writing offer a template filled from what you entered, to copy or download', async ({ page }) => {
+  const errors = await openApp(page, { data: saved });
+  await page.getByRole('button', { name: 'Show all 14 steps' }).click();
+  await page.getByRole('button', { name: 'Put your agreement in writing' }).click();
+  await expect(page.getByRole('heading', { name: 'A template for this step' })).toBeVisible();
+  await page.getByText('Our agreement on finances').click();
+  const doc = page.getByRole('article', { name: 'Our agreement on finances' });
+  await expect(doc).toContainText('Between Sam Taylor and Alex Taylor');
+  await expect(doc).toContainText('14 Elm Road, Leeds');
+  await expect(doc.locator('.nb-gap').first()).toBeVisible();
+  const file = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download' }).click();
+  expect((await file).suggestedFilename()).toMatch(/^stead-agreement-\d{4}-\d{2}-\d{2}\.txt$/);
+  await page.getByRole('button', { name: /Next · 02/ }).click();
+  await expect(page.getByRole('heading', { name: 'Templates for this step' })).toBeVisible();
+  await page.getByText('Letter asking a pension provider for a valuation').click();
+  await expect(page.getByRole('article', { name: 'Letter asking a pension provider for a valuation' })).toContainText('Pensions on Divorce etc. (Provision of Information) Regulations 2000');
+  await noSideways(page);
+  expect(await axe(page)).toEqual([]);
+  expect(errors).toEqual([]);
+});
+
 test('D81: sections, a sticky Continue, come back to this, and a section summary', async ({ page }) => {
   const errors = await openApp(page);
   await area(page, 'D81');

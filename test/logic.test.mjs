@@ -5,6 +5,7 @@ import { amountWords, capital, income, monthly, validate, empty, load, steps, po
 import { STEPS, keyDates, icsFor, finalOrderDate, journeyCount, nextStep } from '../src/steps.js';
 import { draftOrder, orderText, formAAnswers, suggestedFormAOrders, equityShares } from '../src/documents.js';
 import { seal, open, suggestPassphrase, WrongPassphrase } from '../src/share.js';
+import { TEMPLATES, templatesFor, templateText } from '../src/templates.js';
 
 const memory = items => ({ getItem: k => items[k] ?? null });
 const sample = () => {
@@ -114,4 +115,34 @@ test('share links round-trip with the right words and refuse the wrong ones', as
   const code = await seal({ app: 'stead', v: 2, data: sample() }, words, 1000);
   assert.equal((await open(code, words, 1000)).data.answers.applicant, 'Sam Taylor');
   await assert.rejects(open(code, 'wrong-words', 1000), WrongPassphrase);
+});
+
+test('templates: each drafting step has one, filled from the D81 and order, with gaps where Stead cannot know', () => {
+  const blank = empty();
+  for (const step of Object.keys(TEMPLATES)) assert.ok(Number(step) >= 1 && Number(step) <= STEPS.length);
+  for (const step of [1, 2, 4, 10, 12]) for (const t of templatesFor(blank, step)) {
+    assert.ok(t.text.length > 200, t.id);
+    assert.match(t.text, /\[[^\]]+\]/, t.id + ' shows gaps on an empty save');
+    assert.doesNotMatch(t.text, /undefined|NaN|null/, t.id);
+  }
+  const d = sample();
+  d.answers.case = 'LV25D01234';
+  d.order = { home: 'transfer', keeper: '1', lump: '121300', pension: 'Yes', pensionFrom: '0', pensionProvider: 'Acme Pension 991', pensionPct: '40', title: 'WYK123456' };
+  d.before.items.push({ id: 'pp', kind: 'pension', person: 0, amount: '90000', label: 'Acme Pension', frequency: 'monthly' });
+  const agreement = templatesFor(d, 1)[0].text;
+  assert.match(agreement, /Between Sam Taylor and Alex Taylor/);
+  assert.match(agreement, /married on 12 June 2010 and separated on 3 January 2025/);
+  assert.match(agreement, /14 Elm Road, Leeds will be transferred into the sole name of Alex Taylor/);
+  assert.match(agreement, /Alex Taylor will pay Sam Taylor a lump sum of £121,300/);
+  assert.match(agreement, /40% of Sam Taylor’s pension with Acme Pension 991/);
+  assert.match(templatesFor(d, 2).find(t => t.id === 'cetv').text, /Pensions in your D81 to request: Acme Pension\./);
+  assert.match(templatesFor(d, 7)[0].text, /Title number: WYK123456/);
+  assert.match(templatesFor(d, 10)[0].text, /Case number: LV25D01234[\s\S]*pension sharing annex/);
+  assert.deepEqual(templatesFor(d, 14).map(t => t.id), ['pension-share', 'lender-transfer', 'joint-account']);
+  d.order = { home: 'sale' };
+  assert.deepEqual(templatesFor(d, 7), [], 'no lender notice when nothing is transferred');
+  assert.deepEqual(templatesFor(d, 14).map(t => t.id), ['joint-account']);
+  assert.match(templatesFor(d, 1)[0].text, /Sam Taylor receives 50% and Alex Taylor receives 50%/);
+  assert.deepEqual(templatesFor(d, 9), []);
+  assert.match(templateText('x'), /Not legal advice/);
 });

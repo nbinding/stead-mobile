@@ -111,3 +111,6 @@ export function download(name, text, type = 'text/plain') {
   a.href = u; a.download = name; a.click();
   setTimeout(() => URL.revokeObjectURL(u), 1000);
 }
+
+/** Text with [placeholders] shown as dotted gaps still to fill. */
+export const Gaps = ({ text }) => String(text).split(/\[([^\]]+)\]/g).map((p, i) => i % 2 ? <span key={i} className="nb-gap">{p}</span> : <React.Fragment key={i}>{p}</React.Fragment>);
